@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pizza Express – Bronx, NY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red: #E00000;
+      --red-dk: #A50000;
+      --red-glow: rgba(224,0,0,0.35);
+      --red-glow-soft: rgba(224,0,0,0.12);
+      --black: #080808;
+      --offblack: #111111;
+      --card: #141414;
+      --silver: #B0B0B0;
+      --white: #FFFFFF;
+      --border: rgba(255,255,255,0.08);
+      --border-red: rgba(224,0,0,0.25);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--black); color: var(--white); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; height: 68px;
+      background: rgba(8,8,8,0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow 0.3s;
+    }
+    nav.scrolled { box-shadow: 0 4px 40px rgba(0,0,0,0.6); }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px; letter-spacing: 3px;
+      color: var(--white); text-decoration: none;
+      display: flex; align-items: center; gap: 3px;
+    }
+    .nav-logo .red { color: var(--red); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .nav-link {
+      color: var(--silver); font-size: 13px; font-weight: 500;
+      text-decoration: none; letter-spacing: 0.5px;
+      transition: color 0.2s; display: none;
+    }
+    .nav-link:hover { color: var(--white); }
+    .nav-order {
+      background: var(--red); color: var(--white);
+      font-weight: 700; font-size: 12px; letter-spacing: 1.5px;
+      text-transform: uppercase; border: none;
+      padding: 10px 24px; border-radius: 3px;
+      cursor: pointer; text-decoration: none;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 20px var(--red-glow);
+    }
+    .nav-order:hover { background: var(--red-dk); box-shadow: 0 0 30px var(--red-glow); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; overflow: hidden;
+    }
+    /* animated gradient background */
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 40%, #2a0000 0%, #0d0000 40%, #080808 100%);
+      animation: heroPulse 6s ease-in-out infinite;
+    }
+    @keyframes heroPulse {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    /* floating orbs */
+    .hero-orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); pointer-events: none; opacity: 0.4;
+    }
+    .hero-orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, #cc0000, transparent); top: -100px; left: -150px; animation: orbFloat1 8s ease-in-out infinite; }
+    .hero-orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #880000, transparent); bottom: -80px; right: -100px; animation: orbFloat2 10s ease-in-out infinite; }
+    @keyframes orbFloat1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(60px,40px)} }
+    @keyndef orbFloat2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,-60px)} }
+    @keyframes orbFloat2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,-60px)} }
+    /* noise grain overlay */
+    .hero-grain {
+      position: absolute; inset: 0; opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 130px 24px 80px; max-width: 800px; margin: 0 auto;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 700; letter-spacing: 5px;
+      text-transform: uppercase; color: var(--red);
+      margin-bottom: 28px;
+      opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, var(--red));
+      width: 40px;
+    }
+    .hero-eyebrow::after { background: linear-gradient(to left, transparent, var(--red)); }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(90px, 20vw, 180px);
+      line-height: 0.85; letter-spacing: 6px;
+      margin-bottom: 6px;
+      opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
+    }
+    .hero-title .line1 { color: var(--white); display: block; }
+    .hero-title .line2 {
+      color: var(--red); display: block;
+      text-shadow: 0 0 60px var(--red-glow), 0 0 120px rgba(224,0,0,0.2);
+    }
+    .hero-sub {
+      font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.35);
+      letter-spacing: 7px; text-transform: uppercase;
+      margin-bottom: 52px;
+      opacity: 0; animation: fadeUp 0.8s 0.6s forwards;
+    }
+    .hero-btns {
+      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+    .btn-red {
+      background: var(--red); color: var(--white);
+      font-weight: 800; font-size: 13px; letter-spacing: 1.5px;
+      text-transform: uppercase; padding: 16px 34px; border-radius: 3px;
+      text-decoration: none; border: none; cursor: pointer;
+      box-shadow: 0 0 30px var(--red-glow), 0 4px 15px rgba(0,0,0,0.4);
+      transition: all 0.25s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-red:hover { background: var(--red-dk); box-shadow: 0 0 50px var(--red-glow), 0 8px 25px rgba(0,0,0,0.5); transform: translateY(-3px); }
+    .btn-ghost {
+      background: transparent; color: var(--white);
+      font-weight: 700; font-size: 13px; letter-spacing: 1.5px;
+      text-transform: uppercase; padding: 15px 34px; border-radius: 3px;
+      border: 1.5px solid rgba(255,255,255,0.2); text-decoration: none;
+      transition: all 0.25s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-ghost:hover { border-color: var(--red); color: var(--red); transform: translateY(-3px); box-shadow: 0 0 20px var(--red-glow-soft); }
+
+    /* hero scroll indicator */
+    .hero-scroll {
+      position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      opacity: 0; animation: fadeIn 1s 1.4s forwards;
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, transparent, var(--red));
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+    @keyframes scrollLine { 0%{height:0;opacity:0} 50%{height:50px;opacity:1} 100%{height:50px;opacity:0} }
+    .scroll-text { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.2); }
+
+    /* ── SECTION BASE ── */
+    section { padding: 96px 24px; }
+    .section-inner { max-width: 1140px; margin: 0 auto; }
+    .section-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 5px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 10px;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(44px, 8vw, 80px);
+      letter-spacing: 3px; line-height: 0.95; color: var(--white);
+      margin-bottom: 52px;
+    }
+
+    /* ── MENU ── */
+    #menu { background: var(--offblack); position: relative; overflow: hidden; }
+    #menu::before {
+      content: ''; position: absolute; top: -200px; right: -200px;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(224,0,0,0.06), transparent 70%);
+      pointer-events: none;
+    }
+    .menu-tabs {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: rgba(255,255,255,0.4);
+      font-family: 'Inter', sans-serif; font-size: 12px;
+      font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 10px 22px; border-radius: 2px;
+      cursor: pointer; transition: all 0.25s;
+    }
+    .tab-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+    .tab-btn.active {
+      background: var(--red); border-color: var(--red);
+      color: var(--white); box-shadow: 0 0 20px var(--red-glow);
+    }
+    .menu-section { display: none; }
+    .menu-section.active { display: block; }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    /* card entrance animation */
+    .menu-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px; overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), border-color 0.3s, box-shadow 0.3s;
+      opacity: 0; transform: translateY(20px);
+    }
+    .menu-card.visible { opacity: 1; transform: translateY(0); }
+    .menu-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      border-color: var(--border-red);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 20px var(--red-glow-soft);
+    }
+    .menu-card-img {
+      width: 100%; aspect-ratio: 4/3;
+      object-fit: cover; display: block;
+      transition: transform 0.4s ease;
+    }
+    .menu-card:hover .menu-card-img { transform: scale(1.05); }
+    /* no-photo card */
+    .menu-card-nophoto {
+      width: 100%; aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .menu-card-nophoto::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at center, rgba(224,0,0,0.06), transparent 70%);
+    }
+    .nophoto-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px; letter-spacing: 3px;
+      color: var(--red); text-align: center;
+      text-transform: uppercase; padding: 0 20px; line-height: 1.4;
+      text-shadow: 0 0 20px var(--red-glow);
+    }
+    .menu-card-body { padding: 16px; }
+    .menu-card-name {
+      font-weight: 700; font-size: 14px; line-height: 1.3;
+      color: var(--white); margin-bottom: 5px;
+    }
+    .menu-card-desc {
+      font-size: 12px; color: rgba(255,255,255,0.38);
+      line-height: 1.5; margin-bottom: 12px;
+    }
+    .menu-card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .menu-card-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px; letter-spacing: 1px; color: var(--red);
+      text-shadow: 0 0 12px rgba(224,0,0,0.4);
+    }
+    .menu-card-badge {
+      font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; background: var(--red-glow-soft);
+      border: 1px solid var(--border-red); color: var(--red);
+      padding: 3px 8px; border-radius: 2px;
+    }
+
+    /* ── HOURS ── */
+    #hours { background: var(--black); position: relative; }
+    #hours::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(224,0,0,0.04), transparent);
+      pointer-events: none;
+    }
+    .hours-inner { max-width: 540px; margin: 0 auto; text-align: center; }
+    .hours-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      border: 1px solid var(--border-red);
+      background: var(--red-glow-soft);
+      border-radius: 2px; padding: 10px 24px;
+      font-size: 12px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--red);
+      margin-bottom: 44px;
+      box-shadow: 0 0 20px var(--red-glow-soft);
+    }
+    .live-dot {
+      width: 7px; height: 7px; background: var(--red); border-radius: 50%;
+      box-shadow: 0 0 8px var(--red); animation: livePulse 1.5s ease-in-out infinite;
+    }
+    @keyframes livePulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:0.6} }
+    .hours-list { text-align: left; }
+    .hours-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 0; border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+    .hours-row:last-child { border-bottom: none; }
+    .hours-day { font-size: 14px; font-weight: 500; color: var(--silver); }
+    .hours-time { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--white); }
+    .hours-note { margin-top: 32px; font-size: 11px; color: rgba(255,255,255,0.2); letter-spacing: 1px; }
+
+    /* ── ORDER BANNER ── */
+    .order-banner {
+      position: relative; overflow: hidden;
+      padding: 72px 24px; text-align: center;
+      background: var(--red);
+    }
+    .order-banner::before {
+      content: 'ORDER'; position: absolute;
+      font-family: 'Bebas Neue', sans-serif; font-size: 280px; letter-spacing: 20px;
+      color: rgba(0,0,0,0.12); left: 50%; top: 50%;
+      transform: translate(-50%,-50%); white-space: nowrap; pointer-events: none;
+    }
+    .order-banner-inner { position: relative; z-index: 1; }
+    .order-banner h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(44px, 8vw, 80px);
+      letter-spacing: 4px; color: var(--white); margin-bottom: 10px;
+    }
+    .order-banner p { color: rgba(255,255,255,0.75); font-size: 15px; margin-bottom: 36px; font-weight: 500; }
+    .order-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn-white {
+      background: var(--white); color: var(--red); font-weight: 800;
+      font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 16px 32px; border-radius: 3px; text-decoration: none;
+      transition: all 0.2s; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .btn-white:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+    .btn-outline-wh {
+      background: transparent; color: var(--white); font-weight: 700;
+      font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 15px 32px; border-radius: 3px; text-decoration: none;
+      border: 2px solid rgba(255,255,255,0.5); transition: all 0.2s;
+    }
+    .btn-outline-wh:hover { border-color: var(--white); transform: translateY(-3px); }
+
+    /* ── FIND US ── */
+    #find-us { background: var(--offblack); }
+    .find-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 64px; align-items: start;
+    }
+    .find-item { display: flex; gap: 16px; margin-bottom: 32px; align-items: flex-start; }
+    .find-icon-wrap {
+      width: 46px; height: 46px; border-radius: 4px; flex-shrink: 0;
+      background: var(--red-glow-soft); border: 1px solid var(--border-red);
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+      box-shadow: 0 0 12px var(--red-glow-soft);
+    }
+    .find-text strong {
+      display: block; font-size: 10px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--red); margin-bottom: 5px;
+    }
+    .find-text p { font-size: 15px; color: var(--silver); line-height: 1.6; }
+    .find-text a { color: var(--silver); text-decoration: none; transition: color 0.2s; }
+    .find-text a:hover { color: var(--red); }
+    .order-pill-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+    .pill {
+      font-size: 12px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; padding: 10px 20px; border-radius: 3px;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .pill-red { background: var(--red); color: var(--white); box-shadow: 0 0 16px var(--red-glow); }
+    .pill-red:hover { background: var(--red-dk); transform: translateY(-2px); }
+    .pill-ghost { border: 1px solid var(--border); color: var(--silver); }
+    .pill-ghost:hover { border-color: var(--red); color: var(--red); transform: translateY(-2px); }
+    .map-frame {
+      border-radius: 6px; overflow: hidden;
+      border: 1px solid var(--border); height: 360px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.4), 0 0 0 1px var(--border-red);
+    }
+    .map-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #030303; border-top: 1px solid var(--border);
+      padding: 40px 24px; text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif; font-size: 20px;
+      letter-spacing: 5px; color: rgba(255,255,255,0.15); margin-bottom: 14px;
+    }
+    .footer-logo span { color: var(--red); }
+    footer p { font-size: 12px; color: rgba(255,255,255,0.18); line-height: 2.2; }
+    footer a { color: rgba(255,255,255,0.25); text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: var(--red); }
+    .footer-divider { width: 1px; height: 12px; background: rgba(255,255,255,0.1); display: inline-block; margin: 0 12px; vertical-align: middle; }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (min-width: 900px) { .nav-link { display: block; } }
+    @media (max-width: 720px) {
+      .find-grid { grid-template-columns: 1fr; gap: 40px; }
+      .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      section { padding: 64px 16px; }
+      .menu-card-body { padding: 12px; }
+      .menu-card-name { font-size: 13px; }
+      .menu-card-price { font-size: 22px; }
+    }
+    @media (max-width: 400px) {
+      .menu-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav id="navbar">
+  <a class="nav-logo" href="#top">PIZZA <span class="red">EXPRESS</span></a>
+  <div class="nav-right">
+    <a class="nav-link" href="#menu">Menu</a>
+    <a class="nav-link" href="#hours">Hours</a>
+    <a class="nav-link" href="#find-us">Find Us</a>
+    <a class="nav-order" href="#menu">Order Now</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-grain"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Bronx, New York &nbsp;·&nbsp; 3240 3rd Ave</p>
+    <h1 class="hero-title">
+      <span class="line1">PIZZA</span>
+      <span class="line2">EXPRESS</span>
+    </h1>
+    <p class="hero-sub">Fresh &nbsp;·&nbsp; Hot &nbsp;·&nbsp; Delivered</p>
+    <div class="hero-btns">
+      <a class="btn-red" href="https://www.doordash.com/store/pizza-express-3240-3rd-ave-bronx-34600343/" target="_blank">🍕 Order on DoorDash</a>
+      <a class="btn-ghost" href="https://www.ubereats.com/store/pizza-express/R31L5GSjUrWUigeWvJokpA" target="_blank">Order on Uber Eats</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">Scroll</span>
+  </div>
+</div>
+
+<!-- ── MENU ── -->
+<section id="menu">
+  <div class="section-inner">
+    <p class="section-label reveal">What We Make</p>
+    <h2 class="section-title reveal">Our Menu</h2>
+    <div class="menu-tabs reveal">
+      <button class="tab-btn active" onclick="showTab('pizza',this)">🍕 Pizza</button>
+      <button class="tab-btn" onclick="showTab('sides',this)">🍗 Sides</button>
+      <button class="tab-btn" onclick="showTab('desserts',this)">🍰 Desserts</button>
+      <button class="tab-btn" onclick="showTab('drinks',this)">🥤 Drinks</button>
+    </div>
+
+    <!-- PIZZA -->
+    <div class="menu-section active" id="tab-pizza">
+      <div class="menu-grid">
+        <div class="menu-card"><img class="menu-card-img" src="regular-cheese-pie.jpg" alt="Regular Cheese Pie"><div class="menu-card-body"><div class="menu-card-name">Regular Cheese Pie</div><div class="menu-card-desc">Classic cheese pizza. Medium 14" or Large 18".</div><div class="menu-card-footer"><div class="menu-card-price">$14.99</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="pepperoni-pie.jpg" alt="Pepperoni Pie"><div class="menu-card-body"><div class="menu-card-name">Pepperoni Pie</div><div class="menu-card-desc">Classic Italian flavors. Medium 14" or Large 18".</div><div class="menu-card-footer"><div class="menu-card-price">$18.74</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="regular-cheese-pie.jpg" alt="Extra Cheese Pie"><div class="menu-card-body"><div class="menu-card-name">Extra Cheese Pie</div><div class="menu-card-desc">Double the cheese. Medium 14" or Large 18".</div><div class="menu-card-footer"><div class="menu-card-price">$17.49</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="chicken-pie.jpg" alt="Regular Chicken Pie"><div class="menu-card-body"><div class="menu-card-name">Regular Chicken Pie</div><div class="menu-card-desc">Tender chicken on a classic base. Medium or Large.</div><div class="menu-card-footer"><div class="menu-card-price">$18.74</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="spicy-chicken-pie.jpg" alt="Spicy Chicken Pie"><div class="menu-card-body"><div class="menu-card-name">Spicy Chicken Pie</div><div class="menu-card-desc">Chicken with a kick. Medium 14" or Large 18".</div><div class="menu-card-footer"><div class="menu-card-price">$18.74</div><span class="menu-card-badge">🌶 Spicy</span></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="chicken-broccoli-pie.jpg" alt="Chicken Broccoli Pie"><div class="menu-card-body"><div class="menu-card-name">Chicken Broccoli Pie</div><div class="menu-card-desc">Chicken and fresh broccoli. Medium or Large.</div><div class="menu-card-footer"><div class="menu-card-price">$18.74</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="broccoli-pie.jpg" alt="Broccoli Pie"><div class="menu-card-body"><div class="menu-card-name">Broccoli Pie</div><div class="menu-card-desc">Fresh broccoli on a classic base. Medium or Large.</div><div class="menu-card-footer"><div class="menu-card-price">$18.74</div><span class="menu-card-badge">🌿 Veggie</span></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="mixed-veggies-pie.jpg" alt="Mixed Veggies Pie"><div class="menu-card-body"><div class="menu-card-name">Mixed Veggies Pie</div><div class="menu-card-desc">Garden fresh toppings. Medium or Large.</div><div class="menu-card-footer"><div class="menu-card-price">$18.74</div><span class="menu-card-badge">🌿 Veggie</span></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="hawaiian-pie.jpg" alt="Hawaiian Pie"><div class="menu-card-body"><div class="menu-card-name">Hawaiian Pie</div><div class="menu-card-desc">Ham and pineapple on a classic base. Medium or Large.</div><div class="menu-card-footer"><div class="menu-card-price">$18.74</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="meatball-pie.jpg" alt="Meatball Pie"><div class="menu-card-body"><div class="menu-card-name">Meatball Pie</div><div class="menu-card-desc">Hearty meatballs, classic Italian flavors. Medium or Large.</div><div class="menu-card-footer"><div class="menu-card-price">$18.74</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="greek-lamb-pie.jpg" alt="Greek Lamb Pie"><div class="menu-card-body"><div class="menu-card-name">Greek Lamb Pie</div><div class="menu-card-desc">Bold Mediterranean flavors. Medium or Large.</div><div class="menu-card-footer"><div class="menu-card-price">$18.74</div></div></div></div>
+
+        <div class="menu-card"><div class="menu-card-nophoto"><div class="nophoto-text">Turkey Bacon Pie</div></div><div class="menu-card-body"><div class="menu-card-name">Turkey Bacon Pie</div><div class="menu-card-desc">Turkey bacon on a fresh pie. Medium or Large.</div><div class="menu-card-footer"><div class="menu-card-price">$18.74</div></div></div></div>
+      </div>
+    </div>
+
+    <!-- SIDES -->
+    <div class="menu-section" id="tab-sides">
+      <div class="menu-grid">
+        <div class="menu-card"><img class="menu-card-img" src="popcorn-chicken.jpg" alt="Popcorn Chicken"><div class="menu-card-body"><div class="menu-card-name">Popcorn Chicken</div><div class="menu-card-desc">Crispy bite-sized chicken pieces.</div><div class="menu-card-footer"><div class="menu-card-price">$6.24</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="chicken-wings.jpg" alt="Chicken Wings 10pc"><div class="menu-card-body"><div class="menu-card-name">Chicken Wings — 10 Pieces</div><div class="menu-card-desc">Deep-fried, seasoned and marinated.</div><div class="menu-card-footer"><div class="menu-card-price">$13.74</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="chicken-wings.jpg" alt="Chicken Wings 5pc"><div class="menu-card-body"><div class="menu-card-name">Chicken Wings — 5 Pieces</div><div class="menu-card-desc">Deep-fried, seasoned and marinated.</div><div class="menu-card-footer"><div class="menu-card-price">$8.74</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="mozzarella-sticks.jpg" alt="Mozzarella Sticks"><div class="menu-card-body"><div class="menu-card-name">Mozzarella Sticks</div><div class="menu-card-desc">6 pieces, served with marinara sauce.</div><div class="menu-card-footer"><div class="menu-card-price">$6.24</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="onion-rings.jpg" alt="Onion Rings"><div class="menu-card-body"><div class="menu-card-name">Onion Rings</div><div class="menu-card-desc">12 pieces, golden and crispy.</div><div class="menu-card-footer"><div class="menu-card-price">$4.99</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="garlic-knots.jpg" alt="Garlic Knots"><div class="menu-card-body"><div class="menu-card-name">Garlic Knots — 6 Pieces</div><div class="menu-card-desc">Baked with garlic, olive oil, parsley and parmesan.</div><div class="menu-card-footer"><div class="menu-card-price">$3.11</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="chicken-nuggets.jpg" alt="Chicken Nuggets"><div class="menu-card-body"><div class="menu-card-name">Chicken Nuggets</div><div class="menu-card-desc">10 pieces, golden fried.</div><div class="menu-card-footer"><div class="menu-card-price">$7.49</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="beef-patty.jpg" alt="Beef Patty"><div class="menu-card-body"><div class="menu-card-name">Beef Patty</div><div class="menu-card-desc">Succulent beef patty grilled to perfection.</div><div class="menu-card-footer"><div class="menu-card-price">$3.74</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="pepperoni-roll.jpg" alt="Pepperoni Roll"><div class="menu-card-body"><div class="menu-card-name">Pepperoni Roll</div><div class="menu-card-desc">Dough filled with pepperoni and cheese, rolled and baked.</div><div class="menu-card-footer"><div class="menu-card-price">$2.50</div></div></div></div>
+
+        <div class="menu-card"><div class="menu-card-nophoto"><div class="nophoto-text">Chicken Spinach Roll</div></div><div class="menu-card-body"><div class="menu-card-name">Chicken Spinach Roll</div><div class="menu-card-desc">Breaded and fried roll with chicken and spinach.</div><div class="menu-card-footer"><div class="menu-card-price">$6.24</div></div></div></div>
+      </div>
+    </div>
+
+    <!-- DESSERTS -->
+    <div class="menu-section" id="tab-desserts">
+      <div class="menu-grid">
+        <div class="menu-card"><div class="menu-card-nophoto"><div class="nophoto-text">OREO Cake</div></div><div class="menu-card-body"><div class="menu-card-name">OREO Cake</div><div class="menu-card-desc">Moist chocolate cake layered with Oreo buttercream frosting.</div><div class="menu-card-footer"><div class="menu-card-price">$5.61</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="red-velvet-cake.jpg" alt="Red Velvet Cake"><div class="menu-card-body"><div class="menu-card-name">Red Velvet Cake</div><div class="menu-card-desc">Scarlet chocolate layer cake with tangy cream cheese icing.</div><div class="menu-card-footer"><div class="menu-card-price">$5.61</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="carrot-cake.jpg" alt="Carrot Cake"><div class="menu-card-body"><div class="menu-card-name">Carrot Cake</div><div class="menu-card-desc">Moist cake with fresh carrots and cream cheese frosting.</div><div class="menu-card-footer"><div class="menu-card-price">$5.61</div></div></div></div>
+
+        <div class="menu-card"><div class="menu-card-nophoto"><div class="nophoto-text">Cheese Cake</div></div><div class="menu-card-body"><div class="menu-card-name">Cheese Cake</div><div class="menu-card-desc">Smooth and rich creamy cheesecake.</div><div class="menu-card-footer"><div class="menu-card-price">$4.99</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="banana-pudding.jpg" alt="Banana Pudding"><div class="menu-card-body"><div class="menu-card-name">Banana Pudding</div><div class="menu-card-desc">Fresh bananas, vanilla wafers, creamy pudding and whipped cream.</div><div class="menu-card-footer"><div class="menu-card-price">$3.74</div></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="brownie.jpg" alt="Brownie"><div class="menu-card-body"><div class="menu-card-name">Brownie</div><div class="menu-card-desc">Decadent chocolate brownie, perfectly moist and rich.</div><div class="menu-card-footer"><div class="menu-card-price">$3.11</div></div></div></div>
+      </div>
+    </div>
+
+    <!-- DRINKS -->
+    <div class="menu-section" id="tab-drinks">
+      <div class="menu-grid">
+        <div class="menu-card"><img class="menu-card-img" src="coca-cola.jpg" alt="Coca-Cola"><div class="menu-card-body"><div class="menu-card-name">Coca-Cola</div><div class="menu-card-desc">The cold, refreshing, sparkling classic.</div><div class="menu-card-footer"><div class="menu-card-price">$1.99 · $2.99</div><span class="menu-card-badge">Can · Bottle</span></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="sunskist.jpg" alt="Sunkist Orange"><div class="menu-card-body"><div class="menu-card-name">Sunkist Orange</div><div class="menu-card-desc">Refreshing citrus soda with sweet orange flavor.</div><div class="menu-card-footer"><div class="menu-card-price">$1.99 · $2.99</div><span class="menu-card-badge">Can · Bottle</span></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="ginger-ale.jpg" alt="Ginger Ale"><div class="menu-card-body"><div class="menu-card-name">Ginger Ale</div><div class="menu-card-desc">Refreshing, crisp ginger-flavored carbonated soft drink.</div><div class="menu-card-footer"><div class="menu-card-price">$1.99 · $2.99</div><span class="menu-card-badge">Can · Bottle</span></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="pepsi.jpg" alt="Pepsi"><div class="menu-card-body"><div class="menu-card-name">Pepsi</div><div class="menu-card-desc">The bold, refreshing, robust cola.</div><div class="menu-card-footer"><div class="menu-card-price">$1.99</div><span class="menu-card-badge">Can Only</span></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="brisk-iced-tea.jpg" alt="Brisk Iced Tea"><div class="menu-card-body"><div class="menu-card-name">Brisk Iced Tea</div><div class="menu-card-desc">Refreshing canned iced tea.</div><div class="menu-card-footer"><div class="menu-card-price">$1.99</div><span class="menu-card-badge">Can Only</span></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="water.jpg" alt="Water"><div class="menu-card-body"><div class="menu-card-name">Water</div><div class="menu-card-desc">Clear, refreshing bottled water.</div><div class="menu-card-footer"><div class="menu-card-price">$1.49</div><span class="menu-card-badge">Bottle Only</span></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="jarritos.jpg" alt="Jarritos"><div class="menu-card-body"><div class="menu-card-name">Jarritos</div><div class="menu-card-desc">Mexico's classic soda made with real fruit flavors.</div><div class="menu-card-footer"><div class="menu-card-price">$2.99</div><span class="menu-card-badge">Bottle Only</span></div></div></div>
+
+        <div class="menu-card"><img class="menu-card-img" src="snapple.jpg" alt="Snapple"><div class="menu-card-body"><div class="menu-card-name">Snapple</div><div class="menu-card-desc">Premium tea with a burst of fruit flavors.</div><div class="menu-card-footer"><div class="menu-card-price">$2.99</div><span class="menu-card-badge">Bottle Only</span></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOURS ── -->
+<section id="hours">
+  <div class="hours-inner">
+    <p class="section-label reveal">When To Find Us</p>
+    <h2 class="section-title reveal">Hours</h2>
+    <div class="hours-badge reveal"><div class="live-dot"></div> Open Every Day</div>
+    <div class="hours-list reveal">
+      <div class="hours-row"><span class="hours-day">Monday</span><span class="hours-time">10:00 AM – 11:00 PM</span></div>
+      <div class="hours-row"><span class="hours-day">Tuesday</span><span class="hours-time">10:00 AM – 11:00 PM</span></div>
+      <div class="hours-row"><span class="hours-day">Wednesday</span><span class="hours-time">10:00 AM – 11:00 PM</span></div>
+      <div class="hours-row"><span class="hours-day">Thursday</span><span class="hours-time">10:00 AM – 11:00 PM</span></div>
+      <div class="hours-row"><span class="hours-day">Friday</span><span class="hours-time">10:00 AM – 11:00 PM</span></div>
+      <div class="hours-row"><span class="hours-day">Saturday</span><span class="hours-time">10:00 AM – 11:00 PM</span></div>
+      <div class="hours-row"><span class="hours-day">Sunday</span><span class="hours-time">10:00 AM – 11:00 PM</span></div>
+    </div>
+    <p class="hours-note reveal">Available for delivery &amp; pickup every day &nbsp;·&nbsp; DoorDash &nbsp;·&nbsp; Uber Eats</p>
+  </div>
+</section>
+
+<!-- ── ORDER BANNER ── -->
+<div class="order-banner">
+  <div class="order-banner-inner">
+    <h2>READY TO ORDER?</h2>
+    <p>Get it delivered to your door in minutes.</p>
+    <div class="order-btns">
+      <a class="btn-white" href="https://www.doordash.com/store/pizza-express-3240-3rd-ave-bronx-34600343/" target="_blank">Order on DoorDash</a>
+      <a class="btn-outline-wh" href="https://www.ubereats.com/store/pizza-express/R31L5GSjUrWUigeWvJokpA" target="_blank">Order on Uber Eats</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── FIND US ── -->
+<section id="find-us">
+  <div class="section-inner">
+    <p class="section-label reveal">Come See Us</p>
+    <h2 class="section-title reveal">Find Us</h2>
+    <div class="find-grid">
+      <div>
+        <div class="find-item reveal">
+          <div class="find-icon-wrap">📍</div>
+          <div class="find-text"><strong>Address</strong><p>3240 3rd Ave, Bronx, NY 10451</p></div>
+        </div>
+        <div class="find-item reveal">
+          <div class="find-icon-wrap">📞</div>
+          <div class="find-text"><strong>Phone</strong><p><a href="tel:+19179523623">(917) 952-3623</a></p></div>
+        </div>
+        <div class="find-item reveal">
+          <div class="find-icon-wrap">🕙</div>
+          <div class="find-text"><strong>Hours</strong><p>Open Every Day · 10:00 AM – 11:00 PM</p></div>
+        </div>
+        <div class="find-item reveal">
+          <div class="find-icon-wrap">🛵</div>
+          <div class="find-text">
+            <strong>Order Online</strong>
+            <div class="order-pill-row">
+              <a class="pill pill-red" href="https://www.doordash.com/store/pizza-express-3240-3rd-ave-bronx-34600343/" target="_blank">DoorDash</a>
+              <a class="pill pill-ghost" href="https://www.ubereats.com/store/pizza-express/R31L5GSjUrWUigeWvJokpA" target="_blank">Uber Eats</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="map-frame">
+          <iframe src="https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=3240+3rd+Ave,+Bronx,+NY+10451" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">PIZZA <span>EXPRESS</span></div>
+  <p>
+    3240 3rd Ave, Bronx, NY 10451
+    <span class="footer-divider"></span>
+    <a href="tel:+19179523623">(917) 952-3623</a><br>
+    <a href="https://www.doordash.com/store/pizza-express-3240-3rd-ave-bronx-34600343/" target="_blank">DoorDash</a>
+    <span class="footer-divider"></span>
+    <a href="https://www.ubereats.com/store/pizza-express/R31L5GSjUrWUigeWvJokpA" target="_blank">Uber Eats</a><br><br>
+    © 2025 Pizza Express. All rights reserved.
+  </p>
+</footer>
+
+<script>
+  // Tab switching
+  function showTab(name, btn) {
+    document.querySelectorAll('.menu-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+    animateCards();
+  }
+
+  // Navbar scroll shadow
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 60);
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  // Card stagger animation
+  function animateCards() {
+    const cards = document.querySelectorAll('.menu-section.active .menu-card');
+    cards.forEach((c, i) => {
+      c.classList.remove('visible');
+      setTimeout(() => c.classList.add('visible'), i * 50);
+    });
+  }
+
+  // Card observer
+  const cardObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) { animateCards(); cardObs.disconnect(); }
+  }, { threshold: 0.1 });
+  const menuSection = document.getElementById('menu');
+  if (menuSection) cardObs.observe(menuSection);
+</script>
+</body>
+</html>
